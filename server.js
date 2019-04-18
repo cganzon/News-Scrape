@@ -31,7 +31,11 @@ app.use(express.static("public"));
 
 // Routes
 app.get("/", (req, res) => {
-  res.send("Hello world");
+  db.Post
+    .find({})
+    .then(dbPosts => {
+      res.render("home", {posts: dbPosts});
+    })
 });
 
 app.get("/scrape", (req, res) => {

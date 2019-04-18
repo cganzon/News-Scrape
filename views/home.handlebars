@@ -1,0 +1,9 @@
+<h1>Get the latest articles from The Real News!</h1>
+{{#each posts}}
+<h4>{{this.postTitle}}</h4>
+<p>{{this.postDate}}</p>
+<img src={{this.postImage}}>
+<p>{{this.postSummary}}</p>
+<a href={{this.postLink}} target="_blank">Take me to the full article</a>
+<hr>
+{{/each}}
