@@ -1,6 +1,9 @@
 // Dependencies
 const express = require("express");
-const mongojs = require("mongojs");
+const exphbs = require("express-handlebars");
+const axios = require("axios");
+const cheerio = require("cheerio");
+const mongoose = require("mongoose");
 
 // Initialize Express
 const app = express();
@@ -8,25 +11,63 @@ const app = express();
 // PORT for the server
 const PORT = process.env.PORT || 3000;
 
-// Set up a static folder (public) for our web app
-app.use(express.static("public"));
+const db = require("./models");
 
-// Database configuration
-// Save the URL of our database as well as the name of our collection
-const databaseUrl = "newsDB";
-const collections = ["news"];
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
-// Use mongojs to hook the database to the db variable
-const db = mongojs(databaseUrl, collections);
+// Setting up handlebars
+app.engine("handlebars", exphbs({ defaultLayout: "main" }));
+app.set("view engine", "handlebars");
 
-// This makes sure that any errors are logged if mongodb runs into an issue
-db.on("error", error => {
-  console.log("Database Error:", error);
+// Connecting to MongoDB
+mongoose.connect("mongodb://localhost/scrapedinfo", { useNewUrlParser: true }, (err) => {
+  if (err) throw err;
+  console.log("Connected to MongoDB");
 });
+
+// Set up a static folder (public) for site to use
+app.use(express.static("public"));
 
 // Routes
 app.get("/", (req, res) => {
   res.send("Hello world");
+});
+
+app.get("/scrape", (req, res) => {
+  axios
+    .get("https://therealnews.com/recent-content")
+    .then(response => {
+      // console.log(response.data);
+      // res.send(response.data);
+      const $ = cheerio.load(response.data);
+      $("div.fl-post-grid-post").each(function (i, element) {
+        let postTitle = $(element).find("h2").text();
+        let postImage = $(element).find("img").attr("src");
+        let postDate = $(element).find("span").text();
+        let postLink = $(element).find("h2").find("a").attr("href");
+        let postSummary = $(element).find("p").text();
+        // console.log(postTitle);
+        // console.log(postDate);
+        // console.log(postLink);
+        // console.log(postSummary);
+        let postObj = {
+          postTitle: postTitle,
+          postImage: postImage,
+          postDate: postDate,
+          postLink: postLink,
+          postSummary: postSummary
+        };
+        // console.log(postObj);
+
+        // Creating records in MongoDB
+        db.Post
+          .create(postObj)
+          .then(dbPost => console.log(dbPost))
+          .catch(err => console.log(err));
+      });
+      res.send("Scraped data from https://therealnews.com/recent-content");
+    });
 });
 
 // Set the app to listen on port 3000
