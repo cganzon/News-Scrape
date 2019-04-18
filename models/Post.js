@@ -4,11 +4,11 @@ const Schema = mongoose.Schema;
 const postSchema = new Schema ({
     postTitle: {
         type: String,
-        required: true,
+        required: true
     },
     postImage: {
         type: String,
-        required: true,
+        required: true
     },
     postDate: {
         type: Date,
@@ -18,10 +18,11 @@ const postSchema = new Schema ({
     postLink: {
         type: String,
         required: true,
+        unique: true
     },
     postSummary: {
         type: String,
-        required: true,
+        required: true
     }
 });
 

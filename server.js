@@ -66,7 +66,7 @@ app.get("/scrape", (req, res) => {
           .then(dbPost => console.log(dbPost))
           .catch(err => console.log(err));
       });
-      res.send("Scraped data from https://therealnews.com/recent-content");
+      res.send("Scraped data from https://therealnews.com/recent-content. Go back to the main page and refresh to see the articles!");
     });
 });
 
