@@ -2,3 +2,17 @@
     overflow-y: scroll;
     height: 250px;
 }
+
+.scroll a {
+    width: 150px;
+}
+
+.container {
+    background: white;
+    border-radius: 10px;
+}
+
+body {
+    background: url(https://d2v9y0dukr6mq2.cloudfront.net/video/thumbnail/BKaAXTX/news-background-1415_qynqu_3h__F0000.png) no-repeat center center fixed;
+    background-size: cover;
+}

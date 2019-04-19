@@ -36,7 +36,7 @@ app.get("/", (req, res) => {
     .populate("comments")
     .then(dbPosts => {
       // res.json(dbPosts);
-      res.render("home", {posts: dbPosts});
+      res.render("home", { posts: dbPosts });
     })
 });
 
@@ -80,14 +80,25 @@ app.get("/scrape", (req, res) => {
 // Posting comments route
 app.post("/api/:postID/comments", (req, res) => {
   db.Comment
-  .create({commentBody: req.body.commentBody})
-  .then(dbComment => {
-    // res.json(dbComment);
-    return db.Post.findOneAndUpdate({_id: req.params.postID}, {$push: {comments: dbComment._id}}, {new: true})
+    .create({ commentBody: req.body.commentBody })
+    .then(dbPost => {
+      // res.json(dbPost);
+      return db.Post.findOneAndUpdate({ _id: req.params.postID }, { $push: { comments: dbPost._id } }, { new: true })
+    })
+    .then(res.redirect("/"))
+    .catch(err => res.json(err));
+});
+
+app.get('/delete/:commentID', (req, res)=>{
+  db.Comment.findOneAndRemove({_id: req.params.commentID})
+  .then((dbComment)=>{
+      // res.json(dbComment);
+      res.redirect("/");
   })
-  .then(res.redirect("/"))
-  .catch(err => res.json(err));
-})
+  .catch((err)=>{
+      res.json(err);
+  });
+});
 
 // Set the app to listen on port 3000
 app.listen(PORT, () => {
