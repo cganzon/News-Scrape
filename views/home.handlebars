@@ -1,9 +1,38 @@
-<h1>Get the latest articles from The Real News!</h1>
+<h1>Get the latest articles from The Real News Network!</h1>
+<a href="/scrape">Click here to scrape the latest articles!</a>
+<hr>
+
 {{#each posts}}
-<h4>{{this.postTitle}}</h4>
-<p>{{this.postDate}}</p>
-<img src={{this.postImage}}>
-<p>{{this.postSummary}}</p>
-<a href={{this.postLink}} target="_blank">Take me to the full article</a>
+<div class="row mb-3">
+    <div class="col-lg-4">
+        <img src="{{this.postImage}}" class="card-img-top">
+    </div>
+    <div class="col-lg-6">
+        <h5 class="card-title">{{this.postTitle}}</h5>
+        <p>{{this.postDate}}</p>
+        <p class="card-text">{{this.postSummary}}</p>
+        <a href="{{this.postLink}}" class="btn btn-primary" target="_blank">Take me to the full article</a>
+    </div>
+</div>
+<div class="row mb-4">
+    <div class="col-lg-4">
+        <form action="/api/{{this._id}}/comments" method="POST" class="mb-2">
+            <div class="form-group">
+                <h5>Leave a comment!</h5>
+                <input type="text" class="form-control" name="commentBody">
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+    <div class="col-lg-6 scroll">
+        <h5>Comments</h5>
+        <hr>
+        {{#each this.comments}}
+        <p>{{this.commentBody}}</p>
+        <small>{{this.commentDate}}</small>
+        <hr>
+        {{/each}}
+    </div>
+</div>
 <hr>
 {{/each}}

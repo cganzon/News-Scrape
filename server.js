@@ -29,15 +29,18 @@ mongoose.connect("mongodb://localhost/scrapedinfo", { useNewUrlParser: true }, (
 // Set up a static folder (public) for site to use
 app.use(express.static("public"));
 
-// Routes
+// Home Route
 app.get("/", (req, res) => {
   db.Post
     .find({})
+    .populate("comments")
     .then(dbPosts => {
+      // res.json(dbPosts);
       res.render("home", {posts: dbPosts});
     })
 });
 
+// Scrape route
 app.get("/scrape", (req, res) => {
   axios
     .get("https://therealnews.com/recent-content")
@@ -70,9 +73,21 @@ app.get("/scrape", (req, res) => {
           .then(dbPost => console.log(dbPost))
           .catch(err => console.log(err));
       });
-      res.send("Scraped data from https://therealnews.com/recent-content. Go back to the main page and refresh to see the articles!");
+      res.redirect("/");
     });
 });
+
+// Posting comments route
+app.post("/api/:postID/comments", (req, res) => {
+  db.Comment
+  .create({commentBody: req.body.commentBody})
+  .then(dbComment => {
+    // res.json(dbComment);
+    return db.Post.findOneAndUpdate({_id: req.params.postID}, {$push: {comments: dbComment._id}}, {new: true})
+  })
+  .then(res.redirect("/"))
+  .catch(err => res.json(err));
+})
 
 // Set the app to listen on port 3000
 app.listen(PORT, () => {
