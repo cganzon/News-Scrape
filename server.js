@@ -20,8 +20,10 @@ app.use(express.json());
 app.engine("handlebars", exphbs({ defaultLayout: "main" }));
 app.set("view engine", "handlebars");
 
+const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/scrapedinfo";
+
 // Connecting to MongoDB
-mongoose.connect("mongodb://localhost/scrapedinfo", { useNewUrlParser: true }, (err) => {
+mongoose.connect(MONGODB_URI, { useNewUrlParser: true }, (err) => {
   if (err) throw err;
   console.log("Connected to MongoDB");
 });
